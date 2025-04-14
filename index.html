@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>花園大学学園祭 情報スタッフ募集</title>
+    <title>花園大学学園祭 情報チーム募集</title>
     <style>
         * {
             margin: 0;
@@ -16,20 +16,29 @@
             background-color: #f5f5f5;
             color: #333;
             line-height: 1.6;
+            overflow-x: hidden;
         }
         
         header {
             background-color: #3498db;
             color: white;
             text-align: center;
-            padding: 20px 10px;
+            padding: 60px 10px;
             position: relative;
             overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
         
         .header-content {
             position: relative;
             z-index: 2;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s forwards 0.5s;
         }
         
         .header-bg {
@@ -39,18 +48,81 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(135deg, #3498db, #8e44ad);
-            opacity: 0.9;
+            opacity: 0;
+            animation: fadeIn 1.5s forwards;
             z-index: 1;
         }
         
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .particle {
+            position: absolute;
+            display: block;
+            pointer-events: none;
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+        
         h1 {
-            font-size: 2rem;
-            margin-bottom: 5px;
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .word1, .word2, .word3 {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .word1 {
+            animation: fadeInUp 0.7s forwards 1s;
+        }
+        
+        .word2 {
+            animation: fadeInUp 0.7s forwards 1.3s;
+        }
+        
+        .word3 {
+            animation: fadeInUp 0.7s forwards 1.6s;
         }
         
         .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
+            font-size: 1.5rem;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2s;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            opacity: 0;
+            animation: fadeIn 1s forwards 2.5s, bounce 2s infinite 3.5s;
+        }
+        
+        .scroll-indicator:before {
+            content: '';
+            display: block;
+            width: 30px;
+            height: 30px;
+            border-right: 3px solid white;
+            border-bottom: 3px solid white;
+            transform: rotate(45deg);
         }
         
         .container {
@@ -65,6 +137,14 @@
             padding: 25px;
             margin-bottom: 25px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        section.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
         
         h2 {
@@ -75,6 +155,22 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            position: relative;
+        }
+        
+        h2:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -2px;
+            width: 0;
+            height: 2px;
+            background-color: #3498db;
+            transition: width 1.5s ease;
+        }
+        
+        section.visible h2:after {
+            width: 100%;
         }
         
         .highlight {
@@ -83,6 +179,12 @@
             border-radius: 8px;
             border-left: 4px solid #ffc107;
             margin: 15px 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .highlight:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
         
         .position-card {
@@ -90,12 +192,35 @@
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
-            transition: transform 0.3s ease;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        
+        section.visible .position-card {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        section.visible .position-card:nth-child(1) {
+            transition-delay: 0.2s;
+        }
+        
+        section.visible .position-card:nth-child(2) {
+            transition-delay: 0.4s;
+        }
+        
+        section.visible .position-card:nth-child(3) {
+            transition-delay: 0.6s;
+        }
+        
+        section.visible .position-card:nth-child(4) {
+            transition-delay: 0.8s;
         }
         
         .position-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
         
         .position-title {
@@ -117,6 +242,11 @@
             background-color: #e8f4fc;
             border-radius: 8px;
             margin: 20px 0;
+            transition: transform 0.5s ease;
+        }
+        
+        .mentor-section:hover {
+            transform: translateY(-10px);
         }
         
         .mentor-img {
@@ -129,6 +259,11 @@
             justify-content: center;
             margin-bottom: 15px;
             overflow: hidden;
+            transition: transform 0.5s ease;
+        }
+        
+        .mentor-section:hover .mentor-img {
+            transform: scale(1.1);
         }
         
         .cta-button {
@@ -140,12 +275,31 @@
             font-weight: bold;
             text-decoration: none;
             margin-top: 10px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.6s ease;
         }
         
         .cta-button:hover {
             background-color: #c0392b;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .cta-button:hover:before {
+            left: 100%;
         }
         
         .benefits-list {
@@ -153,9 +307,41 @@
         }
         
         .benefits-list li {
-            padding: 8px 0;
+            padding: 12px 0;
             padding-left: 30px;
             position: relative;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        
+        section.visible .benefits-list li {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        section.visible .benefits-list li:nth-child(1) {
+            transition-delay: 0.2s;
+        }
+        
+        section.visible .benefits-list li:nth-child(2) {
+            transition-delay: 0.3s;
+        }
+        
+        section.visible .benefits-list li:nth-child(3) {
+            transition-delay: 0.4s;
+        }
+        
+        section.visible .benefits-list li:nth-child(4) {
+            transition-delay: 0.5s;
+        }
+        
+        section.visible .benefits-list li:nth-child(5) {
+            transition-delay: 0.6s;
+        }
+        
+        section.visible .benefits-list li:nth-child(6) {
+            transition-delay: 0.7s;
         }
         
         .benefits-list li:before {
@@ -164,34 +350,76 @@
             position: absolute;
             left: 0;
             font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        
+        .benefits-list li:hover:before {
+            transform: scale(1.5);
         }
         
         footer {
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
             background-color: #34495e;
             color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-wave {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+        
+        .footer-wave svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 39px;
+            transform: rotateY(180deg);
+        }
+        
+        .footer-wave .shape-fill {
+            fill: #F5F5F5;
         }
         
         .social-links {
-            margin-top: 15px;
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
         }
         
         .social-links a {
             color: white;
-            margin: 0 10px;
-            font-size: 1.2rem;
             text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
         }
         
         /* レスポンシブデザイン */
         @media (max-width: 600px) {
             h1 {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
             
             .subtitle {
-                font-size: 1rem;
+                font-size: 1.1rem;
             }
             
             section {
@@ -200,11 +428,6 @@
             
             .mentor-section {
                 padding: 15px;
-            }
-            
-            p {
-                word-break: keep-all;
-                overflow-wrap: break-word;
             }
         }
         
@@ -215,28 +438,114 @@
         @keyframes pulse {
             0% {
                 transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
             }
+            
             50% {
                 transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(231, 76, 60, 0);
             }
+            
             100% {
                 transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(231, 76, 60, 0);
             }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-20px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+        }
+        
+        /* 3D カード効果 */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+        
+        .tilt-card:hover {
+            transform: rotateX(5deg) rotateY(5deg);
+        }
+        
+        /* タイピングアニメーション */
+        .typing-effect {
+            overflow: hidden;
+            border-right: 3px solid #3498db;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: 2px;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #3498db }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="header-bg"></div>
+        <div class="particles" id="particles"></div>
         <div class="header-content">
-            <h1 class="responsive-title"><span class="word1">花園大学</span> <span class="word2">学園祭情報</span> <span class="word3">スタッフ募集</span></h1>
+            <h1><span class="word1">花園大学</span> <span class="word2">学園祭</span> <span class="word3">情報チーム募集</span></h1>
             <p class="subtitle">初心者大歓迎！一緒に花園祭を盛り上げよう！</p>
         </div>
+        <div class="scroll-indicator"></div>
     </header>
     
     <div class="container">
         <section>
-            <h2>情報スタッフって何するの？</h2>
+            <h2>情報チームって何するの？</h2>
             <p>学園祭の魅力を伝える「情報」チームのメンバーを募集しています！</p>
             <p>Webサイトの制作・更新、SNS運用、パンフレットデザインなど、学園祭を多くの人に知ってもらうための活動を担当します。</p>
             
@@ -249,29 +558,20 @@
         
         <section>
             <h2>こんな活動をします</h2>
-            <div class="position-card">
+            <div class="position-card tilt-card">
                 <div class="position-title">📱 Webサイト制作・運用</div>
                 <p>学園祭の情報を発信するWebサイトの制作・更新を行います。HTMLやCSSなどの基本から学べます。</p>
             </div>
             
-            <div class="position-card">
+            <div class="position-card tilt-card">
                 <div class="position-title">📷 SNS運用</div>
                 <p>Instagram、Twitter、LINEなどのSNSを活用して、学園祭の見どころやイベント情報を発信します。写真撮影や記事作成も担当します。</p>
             </div>
             
-            <div class="position-card">
+            <div class="position-card tilt-card">
                 <div class="position-title">🎨 パンフレット・ポスターデザイン</div>
                 <p>学園祭のパンフレットやポスターのデザインを行います。デザインソフトの使い方から学べます。</p>
             </div>
-        </section>
-        
-        <section class="mentor-section">
-            <div class="mentor-img">
-                <img src="/api/placeholder/120/120" alt="メンター" />
-            </div>
-            <h2>先輩エンジニアが教えます</h2>
-            <p>情報チームには、実際に企業で働くエンジニアが所属しています。わからないことは何でも質問できる環境で、実践的なスキルを身につけられます。</p>
-            <p><strong>初心者でも安心！</strong> 基礎からしっかり教えますので、プログラミングやデザインの経験がなくても大丈夫です。</p>
         </section>
         
         <section>
@@ -287,7 +587,7 @@
         </section>
         
         <section>
-            <h2>募集要項</h2>
+            <h2 class="typing-effect">募集要項</h2>
             <p><strong>対象：</strong> 花園大学の全学部・全学年の学生</p>
             <p><strong>活動期間：</strong> 2025年5月〜11月（学園祭終了まで）</p>
             <p><strong>活動頻度：</strong> 週1〜2回のミーティング、自宅作業あり</p>
@@ -324,13 +624,98 @@
     </div>
     
     <footer>
-        <p>花園大学 学園祭実行委員会 情報チーム</p>
-        <p>お問い合わせ：info-team@hanazono-fes.example.com</p>
-        <div class="social-links">
+        <div class="footer-wave">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+            </svg>
+        </div>
+        <p>花園大学 花園大学 学生会「喫茶子 学園祭実行委員会 情報チーム</p>
+        <p>お問い合わせ：gakuseikai@hanazono.ac.jp</p>
+
+        <p>© 2025 花園大学 学生会「喫茶子」 学園祭実行委員会</p>
+        <!-- <div class="social-links">
             <a href="#">Instagram</a>
             <a href="#">Twitter</a>
             <a href="#">LINE</a>
-        </div>
+        </div> -->
     </footer>
+
+    <script>
+        // パーティクル生成
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('span');
+                particle.className = 'particle';
+                
+                // ランダムな位置と大きさ
+                const size = Math.random() * 15 + 5;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 15;
+                const duration = Math.random() * 20 + 10;
+                
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.opacity = Math.random() * 0.5 + 0.3;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.animationDelay = `${delay}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // スクロール検出
+        function checkScroll() {
+            const sections = document.querySelectorAll('section');
+            const triggerBottom = window.innerHeight * 0.8;
+            
+            sections.forEach(section => {
+                const sectionTop = section.getBoundingClientRect().top;
+                if (sectionTop < triggerBottom) {
+                    section.classList.add('visible');
+                }
+            });
+        }
+        
+        // 3Dカード効果
+        function handleTiltCards() {
+            const cards = document.querySelectorAll('.tilt-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const cardRect = card.getBoundingClientRect();
+                    const cardCenterX = cardRect.left + cardRect.width / 2;
+                    const cardCenterY = cardRect.top + cardRect.height / 2;
+                    
+                    const mouseX = e.clientX - cardCenterX;
+                    const mouseY = e.clientY - cardCenterY;
+                    
+                    const rotateY = mouseX / 10;
+                    const rotateX = -mouseY / 10;
+                    
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+                });
+            });
+        }
+        
+        // ページ読み込み時に実行
+        window.addEventListener('load', () => {
+            createParticles();
+            checkScroll();
+            handleTiltCards();
+            
+            // スクロールイベント
+            window.addEventListener('scroll', checkScroll);
+        });
+    </script>
 </body>
 </html>
