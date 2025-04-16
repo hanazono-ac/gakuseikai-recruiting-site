@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QRコードスキャン画面</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #333;
+    }
+    
+    .container {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 32px;
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+    }
+    
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    
+    .qr-container {
+      margin: 30px auto;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .instruction {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #666;
+      line-height: 1.5;
+    }
+    
+    .url-display {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 6px;
+      font-family: monospace;
+      word-break: break-all;
+    }
+    
+    .size-control {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8f8f8;
+      border-radius: 8px;
+    }
+    
+    .size-control label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+    }
+    
+    .size-control input[type="range"] {
+      width: 80%;
+      margin-bottom: 10px;
+    }
+    
+    .size-value {
+      display: inline-block;
+      min-width: 60px;
+      background: #eee;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-left: 10px;
+    }
+
+    /* カスタムカーソルスタイル */
+    .cursor-dot {
+      width: 30px;
+      height: 30px;
+      background-color: rgba(255, 0, 0, 0.4);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 9999;
+      transition: transform 0.1s ease;
+    }
+  </style>
+</head>
+<body>
+  <!-- カスタムカーソル要素 -->
+  <div class="cursor-dot"></div>
+
+  <div class="container">
+    <div class="qr-container" id="qrcode"></div>
+    
+    <div class="size-control">
+      <label for="size-slider">QRコードのサイズを調整：<span id="size-value" class="size-value">240</span>px</label>
+      <input type="range" id="size-slider" min="100" max="470" value="240" step="10">
+    </div>
+    
+    <p class="instruction">
+      スマートフォンのカメラでQRコードを読み取ると<br>以下のURLにアクセスできます：
+    </p>
+    
+    <div class="url-display" id="url-text">
+        https://gakuseikai-recruiting-site.pages.dev/
+    </div>
+  </div>
+
+  <script>
+    let qrcode;
+    const qrUrl = "https://gakuseikai-recruiting-site.pages.dev/";
+    
+    // QRコードを生成する関数
+    function generateQRCode(size) {
+      // 既存のQRコードをクリア
+      document.getElementById("qrcode").innerHTML = "";
+      
+      // 新しいQRコードを生成
+      qrcode = new QRCode(document.getElementById("qrcode"), {
+        text: qrUrl,
+        width: size,
+        height: size,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+    }
+    
+    // 初期QRコードを生成
+    generateQRCode(240);
+    
+    // URLを表示
+    document.getElementById("url-text").textContent = qrUrl;
+    
+    // スライダーの値が変更されたときのイベント処理
+    const slider = document.getElementById("size-slider");
+    const sizeValue = document.getElementById("size-value");
+    
+    slider.addEventListener("input", function() {
+      const newSize = parseInt(this.value);
+      sizeValue.textContent = newSize;
+      generateQRCode(newSize);
+    });
+    
+    // カスタムカーソルの動きを設定
+    const cursor = document.querySelector('.cursor-dot');
+    
+    document.addEventListener('mousemove', (e) => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+    
+    // 画面内にマウスが入ったときと出たときの処理
+    document.addEventListener('mouseenter', () => {
+      cursor.style.opacity = '1';
+    });
+    
+    document.addEventListener('mouseleave', () => {
+      cursor.style.opacity = '0';
+    });
+  </script>
+</body>
+</html>
